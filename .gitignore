@@ -1,0 +1,22 @@
+# Build artifacts (generated)
+.build/
+.swiftpm/
+build/
+*.app
+AppIcon.icns
+
+# macOS
+.DS_Store
+
+# Xcode (if a project ever gets added)
+DerivedData/
+xcuserdata/
+*.xcuserstate
+
+# Release artifacts
+dist/
+*.zip
+
+# Local environment / secrets
+.env
+.env.*

@@ -92,7 +92,7 @@ scro install-cli # (re)link this CLI into ~/.local/bin (for release installs)
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+Apache-2.0 — see [LICENSE](LICENSE). Includes an explicit patent grant.
 
 ## Notes
 

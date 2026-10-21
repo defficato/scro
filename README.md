@@ -90,6 +90,10 @@ scro install-cli # (re)link this CLI into ~/.local/bin (for release installs)
   `SCRO` app and the `scro-cli` executable).
 - UI is a SwiftUI `MenuBarExtra` popover; the model is an `@Observable` store.
 
+## License
+
+MIT — see [LICENSE](LICENSE).
+
 ## Notes
 
 - Only screenshots taken *while scro is running* are added (history persists

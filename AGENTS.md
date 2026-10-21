@@ -68,6 +68,10 @@ Use these instead of ad-hoc styling. Note: styles can't read
 - Generated artifacts are gitignored (`.build/`, `build/`, `*.app`,
   `AppIcon.icns`); `bundle.sh` regenerates the icon when it's missing.
   Never commit secrets, tokens, or machine-specific paths.
+- `bundle.sh` runs `strip -S` on the binaries before signing: release builds
+  otherwise embed local build paths (e.g. `/Users/<name>/...`) in debug
+  sections. Verify with `grep -a -o '/Users/' scro.app/Contents/MacOS/SCRO`
+  (BSD `strings` in file mode misses non-loaded sections — use `grep -a`).
 - History cap: `ScreenshotStore.maxCaptures = 50`; captures dir is
   `~/Library/Application Support/scro/captures`.
 - Screenshot folder resolution honors `com.apple.screencapture` `location`

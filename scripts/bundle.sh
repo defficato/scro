@@ -17,6 +17,11 @@ mkdir -p "$APP/Contents/MacOS"
 cp ".build/release/SCRO" "$APP/Contents/MacOS/SCRO"
 cp ".build/release/scro-cli" "$APP/Contents/MacOS/scro-cli"
 cp "Info.plist" "$APP/Contents/Info.plist"
+
+# Strip debug info: avoids embedding local build paths (/Users/<name>/...)
+# in distributed binaries.
+strip -S "$APP/Contents/MacOS/SCRO" "$APP/Contents/MacOS/scro-cli" 2>/dev/null || true
+
 mkdir -p "$APP/Contents/Resources"
 if [ -f "AppIcon.icns" ]; then
     cp "AppIcon.icns" "$APP/Contents/Resources/AppIcon.icns"

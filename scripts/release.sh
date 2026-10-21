@@ -23,11 +23,12 @@ ditto "$APP" "$STAGING/$APP"
 ln -s /Applications "$STAGING/Applications"
 hdiutil create -volname "scro $VERSION" -srcfolder "$STAGING" -ov -format UDZO "dist/$DMG" >/dev/null
 rm -rf "$STAGING"
-shasum -a 256 "dist/$DMG" > "dist/$DMG.sha256"
 
 # Zip fallback for scripted installs.
 ditto -c -k --keepParent "$APP" "dist/$ZIP"
-shasum -a 256 "dist/$ZIP" > "dist/$ZIP.sha256"
+
+# Basename-only checksums so users can verify in their download folder.
+(cd dist && shasum -a 256 "$DMG" > "$DMG.sha256" && shasum -a 256 "$ZIP" > "$ZIP.sha256")
 
 echo "✅ dist/$DMG"
 echo "✅ dist/$ZIP"

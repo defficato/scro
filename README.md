@@ -1,101 +1,108 @@
-# scro
+<p align="center">
+  <img src="docs/icon.png" width="120" alt="scro icon">
+</p>
 
-<img src="docs/icon.png" width="96" alt="scro icon">
+<h1 align="center">scro</h1>
 
-A tiny macOS menu bar tray for your screenshots (Apple Silicon, macOS 14+).
+<p align="center">
+  <i>A tiny menu bar tray for your Mac screenshots — capture, browse, copy, drag.</i>
+</p>
 
-Take screenshots with the built-in macOS tools (⇧⌘3 / ⇧⌘4 / ⇧⌘5). Every new
-shot is copied into scro's history automatically. Click the menu bar icon to
-open the panel:
+<p align="center">
+  <a href="https://github.com/defficato/scro/releases/latest"><img src="https://img.shields.io/github/v/release/defficato/scro?color=6366f1" alt="latest release"></a>
+  <img src="https://img.shields.io/badge/macOS-14%2B-black" alt="macOS 14+">
+  <img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="Apache-2.0">
+</p>
 
-- **Preview card** of the current screenshot
-- **Filmstrip** of recent shots — click a thumbnail to select it
-- **‹ Prev / Next ›** to browse history (newest first, keeps the last 50)
-- **Auto-copy**: every new capture goes straight to the clipboard, so ⌘V
-  works immediately (detected in ~0.3–0.5s)
-- **Click the preview** (or the Copy button) to copy it again — pastes as an
-  image in chat/editors and as a file in Finder
-- **Drag the preview** out of the panel to drop it into any app
-- Folder button reveals it in Finder · trash clears history · power quits
+You already take screenshots with **⇧⌘4**. scro picks them up automatically,
+keeps the last 50 in one place, and puts each new shot **on your clipboard the
+moment it's taken** — so you can just ⌘V.
 
-The UI follows a shadcn-inspired design (muted surfaces, hairline borders,
-ghost buttons) — see `Sources/SCRO/Views/Theme.swift`.
+No cloud. No account. No editor you didn't ask for.
 
-## Build & run
+## Install
 
-No Xcode required (uses the Swift toolchain + SwiftPM):
+1. **[Download the latest DMG](https://github.com/defficato/scro/releases/latest)**
+2. Open it and drag **scro** into **Applications**
+3. Launch it — **right-click → Open** the first time (the app is ad-hoc
+   signed, not notarized)
 
-```sh
-./scripts/bundle.sh       # builds scro.app (generates the icon on first run)
-./scripts/install-app.sh  # build + install/upgrade in /Applications (one command)
-```
+That's it. scro sits in your menu bar as a camera icon.
 
-`install-app.sh` stops the running copy, installs to `/Applications`, wires the
-`scro` CLI symlink, verifies the signature, and relaunches. Use it again to
-upgrade after pulling changes.
+> If macOS says *"scro is damaged"*, run this once and open it again:
+> ```sh
+> xattr -dr com.apple.quarantine /Applications/scro.app
+> ```
 
-For development: `swift build` / `swift run SCRO`.
+## Using it
 
-CI builds both targets on every push/PR (`.github/workflows/ci.yml`). Releases
-are cut manually with `./scripts/release.sh` — see below.
+Capture as usual: **⇧⌘4** (region) · **⇧⌘3** (screen) · **⇧⌘5** (options).
+A second later the shot is in the panel **and already copied**.
 
-## Install from a release
+| Do this | Get this |
+|---|---|
+| Click the menu bar icon | Panel with your latest screenshot |
+| Click the preview, or **Copy** | Copied as an image *and* as a file |
+| Drag the preview out | Drop it into Slack, Mail, Finder, anywhere |
+| **‹ Prev / Next ›** | Browse older shots (newest first) |
+| Click a filmstrip thumbnail | Jump straight to that shot |
+| Folder icon | Reveal it in Finder |
+| Trash icon | Clear history (your originals are untouched) |
 
-1. Download `scro-<version>.dmg` from **Releases** and open it
-2. Drag **scro** into the **Applications** shortcut
-3. First launch: **right-click → Open** — the app is ad-hoc signed, not
-   notarized. If macOS reports "damaged", clear quarantine once:
-   ```sh
-   xattr -dr com.apple.quarantine /Applications/scro.app
-   ```
-4. Optional CLI (one command — links itself into `~/.local/bin/scro`):
-   ```sh
-   /Applications/scro.app/Contents/MacOS/scro-cli install-cli
-   ```
+The last **50** shots are kept automatically — older copies are cleaned up for
+you.
 
-A `scro-<version>.zip` is attached as well for scripted installs. Verify
-downloads against the published `.sha256` files.
+## Command line (optional)
 
-## CLI
-
-The app bundle also contains a CLI (`scro-cli`) that shares the same capture
-history — the folder is the source of truth, so the app and CLI stay in sync.
+scro also ships a CLI for the same history:
 
 ```sh
-./scripts/install-cli.sh   # symlinks ~/.local/bin/scro → scro.app/.../scro-cli
-
-scro list        # numbered list, newest first
-scro copy [n]    # copy screenshot n to clipboard (default: latest)
-scro path [n]    # print file path of screenshot n
-scro open [n]    # reveal screenshot n in Finder
-scro count       # number of captures
-scro clear       # delete all captures
-scro dir         # print captures directory
-scro install-cli # (re)link this CLI into ~/.local/bin (for release installs)
+/Applications/scro.app/Contents/MacOS/scro-cli install-cli   # one-time
 ```
 
-## How it works
+| Command | Does |
+|---|---|
+| `scro list` | List captures (newest first) |
+| `scro copy [n]` | Copy shot *n* to the clipboard (default: latest) |
+| `scro path [n]` | Print its file path |
+| `scro open [n]` | Reveal it in Finder |
+| `scro count` · `scro clear` · `scro dir` | Count · wipe history · show folder |
 
-- Watches the macOS screenshot folder (`defaults read com.apple.screencapture
-  location`, falling back to `~/Desktop`) with a `DispatchSource` file watcher.
-  The folder is resolved **at launch** — after changing macOS's save location
-  (⇧⌘5 → Options → Save to), restart scro. Saving to *Clipboard* in that panel
-  writes no file, so scro can't see those shots.
-- New image files are copied into
-  `~/Library/Application Support/scro/captures/` (your originals are never
-  touched) and auto-copied to the clipboard. History is capped at 50, oldest
-  auto-deleted.
-- The captures dir is watched too, so `scro clear` from the CLI updates the
-  panel live. Shared logic lives in the `SCROCore` target (used by both the
-  `SCRO` app and the `scro-cli` executable).
-- UI is a SwiftUI `MenuBarExtra` popover; the model is an `@Observable` store.
+*n is 1-based; `1` = most recent. Works even when the app is closed.*
+
+## Good to know
+
+- **Where are they saved?** Copies live in
+  `~/Library/Application Support/scro/captures/`. Your originals stay wherever
+  macOS put them (Desktop by default).
+- **Want shots elsewhere?** ⇧⌘5 → Options → *Save to* — scro follows that
+  setting (restart the app after changing it).
+- **Only new shots are added**, i.e. taken while scro is running. History
+  persists across restarts.
+- **Start at login:** System Settings → General → Login Items → add scro.
+
+## Build from source
+
+macOS 14+ and a Swift 6 toolchain — Command Line Tools are enough, no Xcode.
+
+```sh
+./scripts/install-app.sh    # build + install to /Applications + CLI link
+```
+
+Prefer to just build? `./scripts/bundle.sh && open scro.app`.
+
+<details>
+<summary><b>Under the hood</b></summary>
+
+- SwiftUI `MenuBarExtra` popover, Swift 6, zero third-party dependencies.
+- Screenshot folder is watched with a `DispatchSource` file watcher; new files
+  are copied in and auto-copied to the clipboard (~0.3–0.5s).
+- The captures folder is the single source of truth — the app and the CLI are
+  just two views of it (no IPC). Shared code lives in the `SCROCore` target.
+- Releases are built with `./scripts/release.sh` (DMG + zip + checksums); CI
+  builds both targets on every push.
+</details>
 
 ## License
 
-Apache-2.0 — see [LICENSE](LICENSE). Includes an explicit patent grant.
-
-## Notes
-
-- Only screenshots taken *while scro is running* are added (history persists
-  across launches).
-- To start scro at login: System Settings → General → Login Items → add scro.app.
+[Apache-2.0](LICENSE).

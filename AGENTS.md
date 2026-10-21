@@ -23,8 +23,10 @@ no IPC.
 - App icon: `./scripts/make-icon.sh` regenerates `AppIcon.icns` from
   `scripts/IconGen.swift` (Core Graphics — keep icon changes code-based, no
   binary design tools). `bundle.sh` copies it into `Contents/Resources/`.
-- Release: `./scripts/release.sh [version]` builds, zips (`dist/`, gitignored),
-  and publishes a GitHub release `v<version>` with a `.sha256` (needs `gh auth`).
+- Release: `./scripts/release.sh [version]` builds, packages a **DMG** (with
+  drag-to-/Applications symlink) + zip fallback in `dist/` (gitignored), and
+  publishes release `v<version>` with `.sha256` files (needs `gh auth`).
+  Re-running for an existing tag uploads with `--clobber` and refreshes notes.
 - CI: `.github/workflows/ci.yml` runs debug + release builds on push to `main`
   and PRs (no publishing). Keep it green; releases stay manual.
 - No test suite; manual test: `open scro.app`, take a screenshot with ⇧⌘4,

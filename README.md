@@ -41,20 +41,20 @@ are cut manually with `./scripts/release.sh` — see below.
 
 ## Install from a release
 
-Grab `scro-<version>.zip` from **Releases**, then:
-
-1. Unzip and move `scro.app` to `/Applications`
-2. First launch: **right-click → Open** — the app is ad-hoc signed, not
+1. Download `scro-<version>.dmg` from **Releases** and open it
+2. Drag **scro** into the **Applications** shortcut
+3. First launch: **right-click → Open** — the app is ad-hoc signed, not
    notarized. If macOS reports "damaged", clear quarantine once:
    ```sh
    xattr -dr com.apple.quarantine /Applications/scro.app
    ```
-3. Optional CLI (one command — links itself into `~/.local/bin/scro`):
+4. Optional CLI (one command — links itself into `~/.local/bin/scro`):
    ```sh
    /Applications/scro.app/Contents/MacOS/scro-cli install-cli
    ```
 
-Verify the download against the published `.sha256` file.
+A `scro-<version>.zip` is attached as well for scripted installs. Verify
+downloads against the published `.sha256` files.
 
 ## CLI
 

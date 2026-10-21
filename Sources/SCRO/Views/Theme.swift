@@ -81,6 +81,22 @@ struct GhostIconButton: View {
     private var _hovered = State(initialValue: false)
     private var hovered: Bool { _hovered.wrappedValue }
 
+    // Explicit init: the memberwise one would be private because of `_hovered`
+    // (and older Swift toolchains disagree about that), breaking CI builds.
+    init(
+        systemImage: String,
+        help: String,
+        danger: Bool = false,
+        isEnabled: Bool = true,
+        action: @escaping () -> Void
+    ) {
+        self.systemImage = systemImage
+        self.help = help
+        self.danger = danger
+        self.isEnabled = isEnabled
+        self.action = action
+    }
+
     var body: some View {
         Button(action: action) {
             Image(systemName: systemImage)
